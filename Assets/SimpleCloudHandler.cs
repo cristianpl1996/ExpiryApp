@@ -100,10 +100,11 @@ public class SimpleCloudHandler : MonoBehaviour {
             mCloudRecoBehaviour.CloudRecoEnabled = true;
           }
       }
-    }*/
+    }
 
 	public void Restart() {
-        mCloudRecoBehaviour.CloudRecoEnabled = true;
-        OnDestroy(); 
-	}
+		if (!mIsScanning) {
+			mCloudRecoBehaviour.CloudRecoEnabled = true;
+		}
+	}*/
 }

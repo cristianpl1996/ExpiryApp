@@ -64,4 +64,9 @@ public class CustomTrackableEventHandler : DefaultTrackableEventHandler
 	public void Pause() {
 		if(isVideoEnabled) _videoPlayer.Pause();
 	}
+	
+	public void Restart() {
+		base.OnTrackingLost();
+		if(isVideoEnabled) _videoPlayer.Pause();
+	}
 }
