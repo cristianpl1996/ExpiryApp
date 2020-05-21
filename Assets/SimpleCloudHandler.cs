@@ -1,31 +1,39 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityEngine;
 using Vuforia;
-using UnityEngine.Video;
 
-public class SimpleCloudHandler : MonoBehaviour, IObjectRecoEventHandler { 
+public class SimpleCloudHandler : MonoBehaviour {
+
     private CloudRecoBehaviour mCloudRecoBehaviour; 
     private bool mIsScanning = false;
     private string mTargetMetadata = "";
+
     public ImageTargetBehaviour ImageTargetTemplate_Alcohol;
 	public ImageTargetBehaviour ImageTargetTemplate_Levepromazina;
 	public ImageTargetBehaviour ImageTargetTemplate_Albendazol;
 	public ImageTargetBehaviour ImageTargetTemplate_Metoclopramida;
-// Use this for initialization 
-    void Start () { 
-// register this event handler at the cloud reco behaviour 
-        mCloudRecoBehaviour = GetComponent<CloudRecoBehaviour>(); 
-		
-        if (mCloudRecoBehaviour) 
-        { 
-            mCloudRecoBehaviour.RegisterEventHandler(this); 
-        } 
+
+    // Register cloud reco callbacks
+    void Awake()
+    {
+        mCloudRecoBehaviour = GetComponent<CloudRecoBehaviour>();
+        mCloudRecoBehaviour.RegisterOnInitializedEventHandler(OnInitialized);
+        mCloudRecoBehaviour.RegisterOnInitErrorEventHandler(OnInitError);
+        mCloudRecoBehaviour.RegisterOnUpdateErrorEventHandler(OnUpdateError);
+        mCloudRecoBehaviour.RegisterOnStateChangedEventHandler(OnStateChanged);
+        mCloudRecoBehaviour.RegisterOnNewSearchResultEventHandler(OnNewSearchResult);
+    }
+    //Unregister cloud reco callbacks when the handler is destroyed
+    void OnDestroy()
+    {
+        mCloudRecoBehaviour.UnregisterOnInitializedEventHandler(OnInitialized);
+        mCloudRecoBehaviour.UnregisterOnInitErrorEventHandler(OnInitError);
+        mCloudRecoBehaviour.UnregisterOnUpdateErrorEventHandler(OnUpdateError);
+        mCloudRecoBehaviour.UnregisterOnStateChangedEventHandler(OnStateChanged);
+        mCloudRecoBehaviour.UnregisterOnNewSearchResultEventHandler(OnNewSearchResult);
     }
 
     public void OnInitialized(TargetFinder targetFinder) {
-        Debug.Log ("Cloud Reco initialized");
+      Debug.Log ("Cloud Reco initialized");
     }
     public void OnInitError(TargetFinder.InitState initError) {
         Debug.Log ("Cloud Reco init error " + initError.ToString());
@@ -57,32 +65,45 @@ public class SimpleCloudHandler : MonoBehaviour, IObjectRecoEventHandler {
 				ObjectTracker tracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
 				tracker.GetTargetFinder<ImageTargetFinder>().EnableTracking(targetSearchResult, ImageTargetTemplate_Alcohol.gameObject);
 			}
+            Debug.Log(mTargetMetadata);
 		} else if ((mTargetMetadata == "levepromazina")) {
 			if (ImageTargetTemplate_Levepromazina) { 
 				// enable the new result with the same ImageTargetBehaviour: 
 				ObjectTracker tracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
 				tracker.GetTargetFinder<ImageTargetFinder>().EnableTracking(targetSearchResult, ImageTargetTemplate_Levepromazina.gameObject);
 			}
+            Debug.Log(mTargetMetadata);
 		} else if ((mTargetMetadata == "albendazol")) {
 			if (ImageTargetTemplate_Albendazol) { 
 				// enable the new result with the same ImageTargetBehaviour: 
 				ObjectTracker tracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
 				tracker.GetTargetFinder<ImageTargetFinder>().EnableTracking(targetSearchResult, ImageTargetTemplate_Albendazol.gameObject);
 			}
+            Debug.Log(mTargetMetadata);
 		} else if ((mTargetMetadata == "metoclopramida")) {
 			if (ImageTargetTemplate_Metoclopramida) { 
 				// enable the new result with the same ImageTargetBehaviour: 
 				ObjectTracker tracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
 				tracker.GetTargetFinder<ImageTargetFinder>().EnableTracking(targetSearchResult, ImageTargetTemplate_Metoclopramida.gameObject);
 			}
+            Debug.Log(mTargetMetadata);
 		} 
         // stop the target finder (i.e. stop scanning the cloud)
         mCloudRecoBehaviour.CloudRecoEnabled = false;
     }
 
-	public void Click() {
-		if (!mIsScanning) {
+    /*void OnGUI() {
+      if (!mIsScanning) {
+          if (GUI.Button(new Rect(100,300,200,50), "Restart Scanning")) {
+          // Restart TargetFinder
+            OnDestroy();
             mCloudRecoBehaviour.CloudRecoEnabled = true;
-		}
+          }
+      }
+    }*/
+
+	public void Restart() {
+        mCloudRecoBehaviour.CloudRecoEnabled = true;
+        OnDestroy(); 
 	}
 }
