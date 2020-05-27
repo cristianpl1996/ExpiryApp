@@ -25,4 +25,8 @@ public class SceneMgr : MonoBehaviour
     public void Exit() {
         Application.Quit();
     }
+
+    public void OpenUrl() {
+        Application.OpenURL("http://expiryapp.zanahoria-chan.com/about");
+    }
 }
