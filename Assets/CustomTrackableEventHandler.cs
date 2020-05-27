@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using Vuforia;
 
 public class CustomTrackableEventHandler : DefaultTrackableEventHandler
 {
@@ -25,6 +26,25 @@ public class CustomTrackableEventHandler : DefaultTrackableEventHandler
         base.Start();
         _interactionBtn.onClick.AddListener(OpenUrl);
         StartCoroutine(PrepareVideo());
+        var vuforia = VuforiaARController.Instance;
+        vuforia.RegisterVuforiaStartedCallback(OnVuforiaStarted);
+        vuforia.RegisterOnPauseCallback(OnPaused);
+    }
+
+    private void OnVuforiaStarted()
+    {
+        CameraDevice.Instance.SetFocusMode(
+            CameraDevice.FocusMode.FOCUS_MODE_CONTINUOUSAUTO);
+    }
+     
+    private void OnPaused(bool paused)
+    {
+        if (!paused) // resumed
+        {
+            // Set again autofocus mode when app is resumed
+            CameraDevice.Instance.SetFocusMode(
+                CameraDevice.FocusMode.FOCUS_MODE_CONTINUOUSAUTO);
+        }
     }
 
     private IEnumerator PrepareVideo()
